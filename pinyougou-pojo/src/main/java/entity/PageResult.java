@@ -5,11 +5,11 @@ import java.util.List;
 
 public class PageResult implements Serializable {
     private long total;
-    private List results;
+    private List rows;
 
-    public PageResult(long total, List results) {
-       this.total = total;
-        this.results = results;
+    public PageResult(long total, List rows) {
+        this.total = total;
+        this.rows = rows;
     }
 
     public long getTotal() {
@@ -20,11 +20,11 @@ public class PageResult implements Serializable {
         this.total = total;
     }
 
-    public List getResults() {
-        return results;
+    public List getRows() {
+        return rows;
     }
 
-    public void setResults(List results) {
-        this.results = results;
+    public void setRows(List rows) {
+        this.rows = rows;
     }
 }

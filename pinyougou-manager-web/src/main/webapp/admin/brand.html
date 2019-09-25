@@ -14,105 +14,12 @@
 	<script src="../plugins/angularjs/angular.min.js"></script>
 	<script src="../plugins/angularjs/pagination.js"></script>
     <link rel="stylesheet" href="../plugins/angularjs/pagination.css">
-
-	<script>
-		var app = angular.module("pinyougou",['pagination']);//定义模块
-
-		app.controller("brandController",function ($scope,$http) {//定义组件
-
+	<script src="../js/base/base_pagination.js"></script>
+	<script src="../js/service/brandService.js"></script>
+	<script src="../js/controller/baseController.js"></script>
+	<script src="../js/controller/brandController.js"></script>
 
 
-			$scope.findAll = function(){//查询所有不分页
-				$http.get("../brand/findAll.do").success(
-						function (response) {
-							$scope.list = response;
-						}
-				)
-			}
-
-			$scope.paginationConf = {//前端分页插件
-				currentPage: 1,//当前页
-				totalItems: 10,//总页数
-				itemsPerPage: 10,//每页显示条数
-				perPageOptions: [5, 10, 20],//选择每页显示条数
-				onChange: function(){
-					$scope.reloadList();//重新加载
-				}
-			};
-
-			//要定义为空json对象不然后端报接受参数异常 400
-			$scope.searchEntity = {};
-			$scope.reloadList = function(){
-				$scope.findPage($scope.searchEntity,$scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage)
-			}
-
-			$scope.findPage = function(searchEntity,pageNum,pageSize){
-				//发送ajax 传递分页参数
-				$http.post("../brand/findPage.do?pageNum="+pageNum+"&pageSize="+pageSize,searchEntity).success(
-						//返回值json数据
-						function (response) {
-							$scope.list = response.results;//把分页结果放入变量展示
-							$scope.paginationConf.totalItems = response.total;//将总条数赋值给分页插件
-						}
-				)
-			}
-
-			//修改之前的回显方法
-			$scope.findOne = function(id){
-				$http.get("../brand/findOne.do?id="+id).success(
-						function (response) {
-							$scope.entity = response
-						}
-				)
-			}
-
-			//保存方法，判断有id就调用后台修改方法，没有id就调用保存方法
-			$scope.save = function () {
-				var urlSaveOrUpdate = "save";
-				if ($scope.entity.id != null) {
-					urlSaveOrUpdate = "update";
-				}
-				$http.post("../brand/"+urlSaveOrUpdate+".do",$scope.entity).success(
-						function (response) {
-							if (response.result){
-								$scope.reloadList();
-							} else {
-								alert(response.msg);
-							}
-						}
-				)
-			}
-
-
-			//定义删除复选框id数组
-			//定义数组写法
-			$scope.selectIds = [];
-			$scope.updateSelectIds = function ($event,id) {
-				if ($event.target.checked) {
-					//如果勾选 添加数组中
-					$scope.selectIds.push(id);
-				}else {
-					//如果取消勾选 则从数组中删除
-					var idx = $scope.selectIds.indexOf(id);
-					$scope.selectIds.splice(idx,1);
-				}
-			}
-
-			//点击删除调用的删除方法
-			$scope.delete = function () {
-				$http.get("../brand/delete.do?ids="+$scope.selectIds).success(
-						function () {
-							$scope.reloadList();
-						}
-				)
-			}
-
-
-
-
-
-		})
-	</script>
 </head>
 <body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="brandController">
   <!-- .box-body -->
