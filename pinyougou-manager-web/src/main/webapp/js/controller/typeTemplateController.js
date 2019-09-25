@@ -27,7 +27,10 @@ app.controller('typeTemplateController' ,function(
 	$scope.findOne=function(id){				
 		typeTemplateService.findOne(id).success(
 			function(response){
-				$scope.entity= response;					
+				$scope.entity= response;
+				$scope.entity.brandIds=JSON.parse($scope.entity.brandIds)
+				$scope.entity.specIds=JSON.parse($scope.entity.specIds)
+				$scope.entity.customAttributeItems = JSON.parse($scope.entity.customAttributeItems)
 			}
 		);				
 	}
@@ -36,7 +39,7 @@ app.controller('typeTemplateController' ,function(
 	$scope.save=function(){				
 		var serviceObject;//服务层对象  				
 		if($scope.entity.id!=null){//如果有ID
-			serviceObject=typeTemplateService.update( $scope.entity ); //修改  
+			serviceObject=typeTemplateService.update( $scope.entity ); //修改
 		}else{
 			serviceObject=typeTemplateService.add( $scope.entity  );//增加 
 		}				
@@ -72,14 +75,11 @@ app.controller('typeTemplateController' ,function(
 	$scope.search=function(page,rows){			
 		typeTemplateService.search(page,rows,$scope.searchEntity).success(
 			function(response){
-				$scope.list=response.rows;	
+				$scope.list=response.rows;
 				$scope.paginationConf.totalItems=response.total;//更新总记录数
-			}			
+			}
 		);
 	}
-
-	$scope.brandList={data:[{id:1,text:'联想'},{id:2,text:'华为'},{id:3,text:'小米'}]};//品牌列表
-
 
 
 	//添加规格行
@@ -91,19 +91,20 @@ app.controller('typeTemplateController' ,function(
 		$scope.entity.customAttributeItems.splice(index,1)
 	}
 
+	$scope.brandList={data:[]};
 
 	$scope.findBrandList = function () {
 		brandService.selectOptionList().success(
 			function (response) {
-				$scope.brandList = response
+				$scope.brandList = {data:response}
 			}
 		)
 	}
-
+	$scope.specList={data:[]};
 	$scope.findSpecList = function () {
 		specificationService.selectOptionList().success(
 			function (response) {
-				$scope.specList = response
+				$scope.specList = {data:response}
 			}
 		)
 	}

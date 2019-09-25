@@ -18,7 +18,7 @@ app.service("brandService",function ($http) {
         return $http.get("../brand/delete.do?ids="+ids)
     }
 
-    $scope.selectOptionList = function () {
+    this.selectOptionList = function () {
         return $http.get("../brand/selectOptionList.do")
     }
 })

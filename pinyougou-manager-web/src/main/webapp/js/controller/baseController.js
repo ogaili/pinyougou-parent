@@ -30,4 +30,17 @@ app.controller("baseController",function ($scope) {
         }
     }
 
+    //字符串转json格式
+    $scope.jsonToString = function (jsonString) {
+        var  value = "";
+        var json	= JSON.parse(jsonString);
+        for (var i = 0;i<json.length;i++){
+            if (i>0){
+                value += "，"
+            }
+            value += json[i].text
+        }
+        return value;
+    }
+
 })
