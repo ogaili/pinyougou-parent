@@ -25,6 +25,8 @@
 	<script src="../js/base/base.js"></script>
 	<script src="../js/service/goodsService.js"></script>
 	<script src="../js/service/uploadService.js"></script>
+	<script src="../js/service/itemCatService.js"></script>
+	<script src="../js/service/typeTemplateService.js"></script>
 	<script src="../js/controller/baseController.js"></script>
 	<script src="../js/controller/goodsController.js"></script>
 
@@ -33,7 +35,7 @@
 
 </head>
 
-<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="goodsController" ng-init="entity.goodsDesc.itemImage=[]">
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="goodsController" ng-init="entity.goodsDesc.itemImage=[];selectItemCat1List()">
 
             <!-- 正文区域 -->
             <section class="content">
@@ -72,17 +74,17 @@
 		                           	  	<table>
 		                           	  		<tr>
 		                           	  			<td>
-		                           	  				<select class="form-control" >														
+		                           	  				<select ng-model="entity.goods.cateGory1Id" ng-options="item.id as item.name for item in itemCat1List" class="form-control" >
 		                           	  				</select>
 		                              			</td>
 		                              			<td>
-		                           	  				<select class="form-control select-sm" ></select>
+		                           	  				<select ng-model="entity.goods.cateGory2Id" ng-options="item.id as item.name for item in itemCat2List" class="form-control select-sm" ></select>
 		                              			</td>
 		                              			<td>
-		                           	  				<select class="form-control select-sm" ></select>
+		                           	  				<select ng-model="entity.goods.cateGory3Id" ng-options="item.id as item.name for item in itemCat3List" class="form-control select-sm" ></select>
 		                              			</td>
 		                              			<td>
-		                           	  				模板ID:19
+		                           	  				模板ID:{{entity.goods.typTemplateId}}
 		                              			</td>
 		                           	  		</tr>
 		                           	  	</table>
@@ -94,10 +96,10 @@
 		                           <div class="col-md-10 data">
 		                               <input ng-model="entity.goods.goodsName" type="text" class="form-control"    placeholder="商品名称" value="">
 		                           </div>
-		                           
+
 		                           <div class="col-md-2 title">品牌</div>
 		                           <div class="col-md-10 data">
-		                              <select class="form-control" ></select>
+		                              <select ng-model="entity.goods.brandId" ng-options="brand.id as brand.text for brand in brandList" class="form-control" ></select>
 		                           </div>
 		
 								   <div class="col-md-2 title">副标题</div>
@@ -170,18 +172,12 @@
                             <!--扩展属性-->
                             <div class="tab-pane" id="customAttribute">
                                 <div class="row data-type">                                
-	                                <div>
-		                                <div class="col-md-2 title">扩展属性1</div>
+	                                <div ng-repeat="pojo in entity.goodsDesc.customAttributeItems">
+		                                <div class="col-md-2 title">{{pojo.text}}</div>
 				                        <div class="col-md-10 data">
-				                              <input class="form-control" placeholder="扩展属性1">	            	 
+				                              <input ng-model="pojo.value" class="form-control" placeholder="{{pojo.text}}">
 				                        </div>
-	                                </div>       
-									<div>
-		                                <div class="col-md-2 title">扩展属性2</div>
-				                        <div class="col-md-10 data">
-				                              <input class="form-control" placeholder="扩展属性2">	            	 
-				                        </div>
-	                                </div>  									
+	                                </div>
                                 </div>
                             </div>
                       
@@ -199,39 +195,17 @@
                             	
 	                                <div class="row data-type">
 	                                
-		                                <div>
-			                                <div class="col-md-2 title">屏幕尺寸</div>
+		                                <div ng-repeat="pojo in specList">
+			                                <div class="col-md-2 title">{{pojo.text}}</div>
 					                        <div class="col-md-10 data">
 					                               
-					                            <span>
-					                            	<input  type="checkbox" >4.0					                            				                            	
+					                            <span ng-repeat="option in pojo.option">
+					                            	<input  type="checkbox" >{{option.optionName}}
 					                            </span>  	
-												<span>
-					                            	<input  type="checkbox" >4.5					                            				                            	
-					                            </span>
-												<span>
-					                            	<input  type="checkbox" >5.0					                            				                            	
-					                            </span>												
-					                            	
+
 					                        </div>
 		                                </div>   
-										<div>
-			                                <div class="col-md-2 title">网络制式</div>
-					                        <div class="col-md-10 data">
-					                               
-					                            <span>
-					                            	<input  type="checkbox" >2G					                            				                            	
-					                            </span>  	
-												<span>
-					                            	<input  type="checkbox" >3G					                            				                            	
-					                            </span>
-												<span>
-					                            	<input  type="checkbox" >4G					                            				                            	
-					                            </span>												
-					                            	
-					                        </div>
-		                                </div>  
-		                                                                                  
+
 	                                </div>
 	
 	                                

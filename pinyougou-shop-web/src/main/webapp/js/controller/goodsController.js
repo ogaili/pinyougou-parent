@@ -1,5 +1,6 @@
  //控制层 
-app.controller('goodsController' ,function($scope,$controller   ,goodsService,uploadService){
+app.controller('goodsController' ,function($scope,$controller   ,goodsService,uploadService,
+										   itemCatService,typeTemplateService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -98,4 +99,62 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService,up
 	$scope.remove_image_entity=function(index){
 		$scope.entity.goodsDesc.itemImages.splice(index,1);
 	}
+
+	$scope.selectItemCat1List = function () {
+		itemCatService.findByParentId(0).success(
+			function (response) {
+				$scope.itemCat1List = response;
+			}
+		)
+	}
+
+	$scope.$watch("entity.goods.cateGory1Id",function (newValue,oldValue) {
+		$scope.itemCat3List = null;
+		$scope.entity.goods.typTemplateId = null;
+		if (newValue!=null) {
+			itemCatService.findByParentId(newValue).success(
+				function (response) {
+					$scope.itemCat2List = response;
+				}
+			)
+		}
+	})
+
+	$scope.$watch("entity.goods.cateGory2Id",function (newValue,oldValue) {
+		$scope.entity.goods.typTemplateId = null;
+		if (newValue!=null) {
+			itemCatService.findByParentId(newValue).success(
+				function (response) {
+					$scope.itemCat3List = response;
+				}
+			)
+		}
+	})
+
+	$scope.$watch("entity.goods.cateGory3Id",function (newValue,oldValue) {
+		if (newValue!=null) {
+			itemCatService.findOne(newValue).success(
+				function (response) {
+					$scope.entity.goods.typTemplateId = response.typeId;
+				}
+			)
+		}
+	})
+
+
+	$scope.$watch("entity.goods.typTemplateId",function (newValue,oldValue) {
+		if (newValue!=null) {
+			typeTemplateService.findOne(newValue).success(
+				function (response) {
+					$scope.brandList =JSON.parse(response.brandIds);
+					$scope.entity.goodsDesc.customAttributeItems = JSON.parse(response.customAttributeItems)
+				}
+			)
+			typeTemplateService.findSpecList(newValue).success(
+				function (response) {
+					$scope.specList = response;
+				}
+			)
+		}
+	})
 });	
