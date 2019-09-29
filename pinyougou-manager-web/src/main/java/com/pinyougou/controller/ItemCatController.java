@@ -1,6 +1,7 @@
 package com.pinyougou.controller;
 import java.util.List;
 
+import com.pinyougou.pojo.TbItemCatExample;
 import entity.Result;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,12 +92,11 @@ public class ItemCatController {
 	 */
 	@RequestMapping("/delete")
 	public Result delete(Long [] ids){
-		try {
-			itemCatService.delete(ids);
-			return new Result(true, "删除成功"); 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new Result(false, "删除失败");
+		boolean b = itemCatService.delete(ids);
+		if (b){
+			return new Result(true,"删除成功");
+		}else {
+			return new Result(false,"删除失败，请确保分类下无数据");
 		}
 	}
 	
@@ -110,6 +110,11 @@ public class ItemCatController {
 	@RequestMapping("/search")
 	public PageResult search(@RequestBody TbItemCat itemCat, int page, int rows  ){
 		return itemCatService.findPage(itemCat, page, rows);		
+	}
+
+	@RequestMapping("/findByParentId")
+	public List<TbItemCat> findByParentId(Long parentId){
+		return itemCatService.findByParentId(parentId);
 	}
 	
 }
