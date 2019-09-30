@@ -84,7 +84,7 @@
 		                           	  				<select ng-model="entity.goods.cateGory3Id" ng-options="item.id as item.name for item in itemCat3List" class="form-control select-sm" ></select>
 		                              			</td>
 		                              			<td>
-		                           	  				模板ID:{{entity.goods.typTemplateId}}
+		                           	  				模板ID:{{entity.goods.typeTemplateId}}
 		                              			</td>
 		                           	  		</tr>
 		                           	  	</table>
@@ -186,12 +186,12 @@
                             	<div class="row data-type">
 	                            	<div class="col-md-2 title">是否启用规格</div>
 			                        <div class="col-md-10 data">
-			                        	<input type="checkbox" >			                           
+			                        	<input ng-model="entity.goods.isEnableSpec" ng-click="cleanList()" ng-true-value="1" ng-false-value="0" type="checkbox" >
 			                        </div>
                             	</div>
                             	<p>
                             	
-                            	<div>
+                            	<div ng-if="entity.goods.isEnableSpec == 1">
                             	
 	                                <div class="row data-type">
 	                                
@@ -200,12 +200,11 @@
 					                        <div class="col-md-10 data">
 					                               
 					                            <span ng-repeat="option in pojo.option">
-					                            	<input  type="checkbox" >{{option.optionName}}
+					                            	<input ng-click="createSpecificationItems($event,pojo.text,option.optionName);createItems()"  type="checkbox" >{{option.optionName}}
 					                            </span>  	
 
 					                        </div>
-		                                </div>   
-
+		                                </div>
 	                                </div>
 	
 	                                
@@ -213,8 +212,8 @@
 	                                	 <table class="table table-bordered table-striped table-hover dataTable">
 						                    <thead>
 						                        <tr>					                          
-												    <th class="sorting">屏幕尺寸</th>
-													<th class="sorting">网络制式</th>
+												    <th ng-repeat="pojo in entity.goodsDesc.specificationItems" class="sorting">{{pojo.attributeName}}</th>
+
 												    <th class="sorting">价格</th>
 												    <th class="sorting">库存</th>
 												    <th class="sorting">是否启用</th>
@@ -222,87 +221,23 @@
 											    </tr>
 								            </thead>
 						                    <tbody>
-						                      <tr>					                           
-										            <td>
-										            	4.0
-										            </td>
-													<td>
-										            	3G
+						                      <tr ng-repeat="pojo in entity.items">
+										            <td ng-repeat="items in entity.goodsDesc.specificationItems">
+										            	{{pojo.spec[items.attributeName]}}
 										            </td>
 										            <td>
-										           		<input class="form-control"  placeholder="价格">
+										           		<input ng-model="pojo.price" class="form-control"  placeholder="价格">
 										            </td>
 										            <td>
-										            	<input class="form-control" placeholder="库存数量">
+										            	<input ng-model="pojo.num" class="form-control" placeholder="库存数量">
 										            </td>
 										            <td>
-										             	<input type="checkbox" >
+										             	<input ng-model="pojo.status" ng-true-value="1" ng-false-value="0" type="checkbox" >
 										            </td>
 										            <td>
-										                <input type="checkbox" >									             	
+										                <input ng-model="pojo.isDefault" ng-true-value="1" ng-false-value="0"  type="checkbox" >
 										            </td>
 						                      </tr>
-											  <tr>					                           
-										            <td>
-										            	4.0
-										            </td>
-													<td>
-										            	4G
-										            </td>
-										            <td>
-										           		<input class="form-control"  placeholder="价格">
-										            </td>
-										            <td>
-										            	<input class="form-control" placeholder="库存数量">
-										            </td>
-										            <td>
-										             	<input type="checkbox" >
-										            </td>
-										            <td>
-										                <input type="checkbox" >									             	
-										            </td>
-						                      </tr>
-											  <tr>					                           
-													<td>
-										            	5.0
-										            </td>
-													<td>
-										            	3G
-										            </td>
-										            <td>
-										           		<input class="form-control"  placeholder="价格">
-										            </td>
-										            <td>
-										            	<input class="form-control" placeholder="库存数量">
-										            </td>
-										            <td>
-										             	<input type="checkbox" >
-										            </td>
-										            <td>
-										                <input type="checkbox" >									             	
-										            </td>
-						                      </tr>
-											  <tr>					                           
-													<td>
-										            	5.0
-										            </td>
-													<td>
-										            	4G
-										            </td>
-										            <td>
-										           		<input class="form-control"  placeholder="价格">
-										            </td>
-										            <td>
-										            	<input class="form-control" placeholder="库存数量">
-										            </td>
-										            <td>
-										             	<input type="checkbox" >
-										            </td>
-										            <td>
-										                <input type="checkbox" >									             	
-										            </td>
-						                      </tr>
-											  
 						                    </tbody>
 									 	</table>
 								
