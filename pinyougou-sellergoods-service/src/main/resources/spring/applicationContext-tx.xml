@@ -15,7 +15,7 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd>
         http://www.springframework.org/schema/aop
-        http://www.springframework.org/schema/context/spring-aop.xsd">
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
  
 
     <!-- 事务管理器  -->  

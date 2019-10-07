@@ -115,6 +115,21 @@ app.controller('goodsController' ,function($scope,$controller,$location   ,goods
 		);
 	};
 
+	//商品上下架
+	$scope.updateIsMarketable=function(id,status){
+		//获取选中的复选框
+		goodsService.updateIsMarketable(id,status).success(
+			function(response){
+				if(response.success){
+					alert(response.message);
+					$scope.reloadList();//刷新列表
+				}else {
+					alert(response.message);
+				}
+			}
+		);
+	};
+
 
 	$scope.searchEntity={};//定义搜索对象 
 

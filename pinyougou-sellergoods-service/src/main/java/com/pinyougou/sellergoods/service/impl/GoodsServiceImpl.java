@@ -66,6 +66,7 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public void add(Goods goods) {
 		goods.getGoods().setAuditStatus("0");//状态：未审核
+		goods.getGoods().setIsMarketable("1");//状态 ：上架
 		goodsMapper.insert(goods.getGoods());//插入商品基本信息
 
 		goods.getGoodsDesc().setGoodsId(goods.getGoods().getId());//将商品基本表的ID给商品扩展表
@@ -233,5 +234,18 @@ public class GoodsServiceImpl implements GoodsService {
 		Page<TbGoods> page= (Page<TbGoods>)goodsMapper.selectByExample(example);		
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+
+	/**
+	 * 商品上下架
+	 * @param id
+	 * @param status
+	 * @return
+	 */
+	@Override
+	public void updateIsMarketable(Long id, String status) {
+		TbGoods goods = goodsMapper.selectByPrimaryKey(id);
+		goods.setIsMarketable(status);
+		goodsMapper.updateByPrimaryKey(goods);
+	}
+
 }

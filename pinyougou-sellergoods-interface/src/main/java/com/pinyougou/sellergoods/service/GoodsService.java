@@ -66,5 +66,11 @@ public interface GoodsService {
 	 * @return
 	 */
 	public PageResult findPage(TbGoods goods, int pageNum, int pageSize);
-	
+
+	/**
+	 * 商品上下架
+	 * @param status
+	 * @return
+	 */
+	void updateIsMarketable(Long id, String status);
 }

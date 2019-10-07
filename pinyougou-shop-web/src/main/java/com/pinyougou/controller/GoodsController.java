@@ -123,6 +123,21 @@ public class GoodsController {
 	public Result updateAuditStatus(Long [] ids,String status){
 		 return goodsService.updateAuditStatus(ids,status);
 	}
+
+	/**
+	 * 商品上下架
+	 * @param
+	 */
+	@RequestMapping("/updateIsMarketable")
+	public Result updateIsMarketable(Long id,String status){
+		try {
+			goodsService.updateIsMarketable(id,status);
+			return new Result(true,"修改成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(false,"修改失败");
+		}
+	}
 	
 		/**
 	 * 查询+分页

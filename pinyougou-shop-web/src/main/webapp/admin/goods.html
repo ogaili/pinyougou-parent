@@ -96,9 +96,31 @@
 		                                  	<span>
 		                                  		{{statusList[entity.auditStatus]}}
 		                                  	</span>
-		                                  </td>		                                  
-		                                  <td class="text-center">                                          
-		                                 	  <a href="goods_edit.html#?id={{entity.id}}" class="btn bg-olive btn-xs">修改</a>
+		                                  </td>
+
+		                                  <td class="text-center">
+												<!---判断是0表示未上架状态 显示上架按钮-->
+											  <span ng-if="entity.isMarketable == 0">
+												  <!-- 判断是否通过审核，通过审核则可以点击上架 否则不能点击 -->
+												  <span ng-if="entity.auditStatus == 2">
+													  <button ng-click="updateIsMarketable(entity.id,1)"  type="button" class="btn bg-olive btn-xs">上架</button>
+												  </span>
+												  <span ng-if="entity.auditStatus != 2">
+													  <button disabled="disabled"  type="button" class="btn bg-olive btn-xs">上架</button>
+												  </span>
+											  </span>
+											  <!---判断是1表示上架状态 显示下架按钮-->
+											  <span ng-if="entity.isMarketable == 1">
+												  <!-- 判断是否通过审核，通过审核则可以点击下架 否则不能点击 -->
+												  <span ng-if="entity.auditStatus == 2">
+													  <button ng-click="updateIsMarketable(entity.id,0)"  type="button" class="btn bg-olive btn-xs">下架</button>
+												  </span>
+												  <span ng-if="entity.auditStatus != 2">
+													  <button disabled="disabled"  type="button" class="btn bg-olive btn-xs">上架</button>
+												  </span>
+											  </span>
+
+		                                 	  <a href="goods_edit.html#?id={{entity.id}}" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal" >修改</a>
 		                                  </td>
 			                          </tr>
 			                      </tbody>
