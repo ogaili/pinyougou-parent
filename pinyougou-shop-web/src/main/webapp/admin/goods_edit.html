@@ -35,7 +35,7 @@
 
 </head>
 
-<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="goodsController" ng-init="entity.goodsDesc.itemImage=[];selectItemCat1List()">
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="goodsController" ng-init="entity.goodsDesc.itemImage=[];selectItemCat1List();findOne()">
 
             <!-- 正文区域 -->
             <section class="content">
@@ -74,14 +74,14 @@
 		                           	  	<table>
 		                           	  		<tr>
 		                           	  			<td>
-		                           	  				<select ng-model="entity.goods.cateGory1Id" ng-options="item.id as item.name for item in itemCat1List" class="form-control" >
+		                           	  				<select ng-model="entity.goods.category1Id" ng-options="item.id as item.name for item in itemCat1List" class="form-control" >
 		                           	  				</select>
 		                              			</td>
 		                              			<td>
-		                           	  				<select ng-model="entity.goods.cateGory2Id" ng-options="item.id as item.name for item in itemCat2List" class="form-control select-sm" ></select>
+		                           	  				<select ng-model="entity.goods.category2Id" ng-options="item.id as item.name for item in itemCat2List" class="form-control select-sm" ></select>
 		                              			</td>
 		                              			<td>
-		                           	  				<select ng-model="entity.goods.cateGory3Id" ng-options="item.id as item.name for item in itemCat3List" class="form-control select-sm" ></select>
+		                           	  				<select ng-model="entity.goods.category3Id" ng-options="item.id as item.name for item in itemCat3List" class="form-control select-sm" ></select>
 		                              			</td>
 		                              			<td>
 		                           	  				模板ID:{{entity.goods.typeTemplateId}}
@@ -200,7 +200,7 @@
 					                        <div class="col-md-10 data">
 					                               
 					                            <span ng-repeat="option in pojo.option">
-					                            	<input ng-click="createSpecificationItems($event,pojo.text,option.optionName);createItems()"  type="checkbox" >{{option.optionName}}
+					                            	<input ng-click="createSpecificationItems($event,pojo.text,option.optionName);createItems()" ng-checked="checkAttributeValue(pojo.text,option.optionName)" type="checkbox" >{{option.optionName}}
 					                            </span>  	
 
 					                        </div>
@@ -257,8 +257,8 @@
                  	
                    </div>
                   <div class="btn-toolbar list-toolbar">
-				      <button ng-click="add()" class="btn btn-primary" ><i class="fa fa-save"></i>保存</button>
-				      <button class="btn btn-default" >返回列表</button>
+				      <button ng-click="save()" class="btn btn-primary" ><i class="fa fa-save"></i>保存</button>
+				      <a href="goods.html" class="btn btn-default" >返回列表</a>
 				  </div>
 			
             </section>

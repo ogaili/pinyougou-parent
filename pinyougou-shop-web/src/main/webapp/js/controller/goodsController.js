@@ -1,5 +1,5 @@
  //控制层 
-app.controller('goodsController' ,function($scope,$controller   ,goodsService,uploadService,
+app.controller('goodsController' ,function($scope,$controller,$location   ,goodsService,uploadService,
 										   itemCatService,typeTemplateService){
 	
 	$controller('baseController',{$scope:$scope});//继承
@@ -23,25 +23,60 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService,up
 		);
 	}
 	
-	//查询实体 
-	$scope.findOne=function(id){				
+	//查询实体
+	var id = $location.search()['id'];
+	$scope.findOne=function(){
+		if (id == null){
+			return;
+		}
 		goodsService.findOne(id).success(
 			function(response){
-				$scope.entity= response;					
+				$scope.entity= response;
+				//查询出来后 给富文本赋值
+				editor.html($scope.entity.goodsDesc.introduction);
+				//给图片字符转转换成json对象
+				$scope.entity.goodsDesc.itemImages = JSON.parse($scope.entity.goodsDesc.itemImages);
+				//扩展属性转换成json对象
+				$scope.entity.goodsDesc.customAttributeItems = JSON.parse($scope.entity.goodsDesc.customAttributeItems);
+				//规格转换成json对象
+				$scope.entity.goodsDesc.specificationItems = JSON.parse($scope.entity.goodsDesc.specificationItems);
+				//sku转换json对象
+				for (var i = 0;i< $scope.entity.items.length;i++){
+					$scope.entity.items[i].spec = JSON.parse($scope.entity.items[i].spec)
+				}
 			}
 		);				
-	}
+	};
+
+	//回显复选框勾选
+	$scope.checkAttributeValue = function(text,option){
+		var object = $scope.searchObjectByKey($scope.entity.goodsDesc.specificationItems,'attributeName',text);
+		if (object == null) {
+			return false;
+		}else {
+			if (object.attributeValue.indexOf(option)>=0){
+				return true;
+			} else {
+				return false;
+			}
+		}
+	};
 	
 	//保存
-	$scope.add=function(){
+	$scope.save=function(){
 		$scope.entity.goodsDesc.introduction = editor.html();
-		goodsService.add( $scope.entity ).success(
+
+		var object = null;
+		if ($scope.entity.goods.id != null) {
+			object = goodsService.update($scope.entity)
+		}else{
+			object = goodsService.add($scope.entity)
+		}
+		object.success(
 			function(response){
 				if(response.success){
-					alert("添加成功");
-					$scope.entity={};
-					location.reload()
-					editor.html("");
+					alert("保存成功");
+					location.href = 'goods.html'
 				}else{
 					alert(response.message);
 				}
@@ -62,9 +97,42 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService,up
 			}		
 		);				
 	}
-	
+
+	//提交审核
+	$scope.updateAuditStatus=function(status){
+		//获取选中的复选框
+		goodsService.updateAuditStatus( $scope.selectIds,status).success(
+			function(response){
+				if(response.success){
+					alert(response.message);
+					$scope.reloadList();//刷新列表
+					$scope.selectIds=[];
+				}else {
+					alert(response.message);
+					$scope.selectIds=[];
+				}
+			}
+		);
+	};
+
+
 	$scope.searchEntity={};//定义搜索对象 
-	
+
+	$scope.statusList = ['未申请','已申请','通过审核','审核未通过','关闭'];
+
+	$scope.ItemCatList=[];
+	//查询所有分类
+	$scope.findAllItemCatList = function(){
+		itemCatService.findAll().success(
+			function (response) {
+				for (var i = 0;i<response.length;i++){
+					$scope.ItemCatList[response[i].id] = response[i].name;
+				}
+			}
+		)
+	};
+
+
 	//搜索
 	$scope.search=function(page,rows){			
 		goodsService.search(page,rows,$scope.searchEntity).success(
@@ -90,7 +158,7 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService,up
 		});
 	};
 
-	$scope.entity={goods:{},goodsDesc:{itemImages:[]}};//定义页面实体结构
+	$scope.entity={goods:{},goodsDesc:{itemImages:[]},items:[]};//定义页面实体结构
 	//添加图片列表
 	$scope.add_image_entity=function(){
 		$scope.entity.goodsDesc.itemImages.push($scope.image_entity);
@@ -102,6 +170,7 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService,up
 	}
 
 	$scope.selectItemCat1List = function () {
+
 		itemCatService.findByParentId(0).success(
 			function (response) {
 				$scope.itemCat1List = response;
@@ -109,7 +178,7 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService,up
 		)
 	}
 
-	$scope.$watch("entity.goods.cateGory1Id",function (newValue,oldValue) {
+	$scope.$watch('entity.goods.category1Id',function (newValue,oldValue) {
 		if (newValue!=null) {
 			$scope.itemCat3List = null;
 			$scope.entity.goods.typeTemplateId = null;
@@ -121,7 +190,7 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService,up
 		}
 	})
 
-	$scope.$watch("entity.goods.cateGory2Id",function (newValue,oldValue) {
+	$scope.$watch("entity.goods.category2Id",function (newValue,oldValue) {
 		if (newValue!=null) {
 			$scope.entity.goods.typeTemplateId = null;
 			itemCatService.findByParentId(newValue).success(
@@ -132,7 +201,7 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService,up
 		}
 	})
 
-	$scope.$watch("entity.goods.cateGory3Id",function (newValue,oldValue) {
+	$scope.$watch("entity.goods.category3Id",function (newValue,oldValue) {
 		if (newValue!=null) {
 			itemCatService.findOne(newValue).success(
 				function (response) {
@@ -142,15 +211,15 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService,up
 		}
 	})
 
-
+	$scope.specList = [];
 	$scope.$watch("entity.goods.typeTemplateId",function (newValue,oldValue) {
 		if (newValue!=null) {
-
 			typeTemplateService.findOne(newValue).success(
 				function (response) {
-
 					$scope.brandList =JSON.parse(response.brandIds);
-					$scope.entity.goodsDesc.customAttributeItems = JSON.parse(response.customAttributeItems)
+					if (id==null) {
+						$scope.entity.goodsDesc.customAttributeItems = JSON.parse(response.customAttributeItems)
+					}
 				}
 			)
 			typeTemplateService.findSpecList(newValue).success(
