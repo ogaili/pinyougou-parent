@@ -117,5 +117,10 @@ public class TypeTemplateController {
 	public List<Map> findSpecList(Long id){
 		return typeTemplateService.findSpecList(id);
 	}
-	
+
+	//查询模板数组
+	@RequestMapping("/findTypeTemplateList")
+	public List<TbTypeTemplate> findTypeTemplateList(){
+		return typeTemplateService.findTypeTemplateList();
+	}
 }

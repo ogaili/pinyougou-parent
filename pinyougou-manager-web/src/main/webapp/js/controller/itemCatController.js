@@ -1,5 +1,5 @@
  //控制层 
-app.controller('itemCatController' ,function($scope,$controller   ,itemCatService){
+app.controller('itemCatController' ,function($scope,$controller ,typeTemplateService  ,itemCatService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 
@@ -112,4 +112,22 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 	$scope.clearSelectIds=function () {
 		$scope.selectIds = [];
 	}
+
+	//查询模板数组
+	$scope.typeTemplateList = [];
+	//模板id对应模板名称数组
+	$scope.typeTemplateArray = [];
+	$scope.findTypeTemplateList = function () {
+		typeTemplateService.findTypeTemplateList().success(
+			function (response) {
+				$scope.typeTemplateList = response;
+
+				for (var i = 0; i<response.length;i++){
+					$scope.typeTemplateArray[response[i].id] = response[i].name
+				}
+			}
+		)
+	}
+
+
 });

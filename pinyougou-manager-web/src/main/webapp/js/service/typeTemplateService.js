@@ -33,4 +33,9 @@ app.service('typeTemplateService',function($http){
 	this.findSpecList = function (id) {
 		return $http.post("../typeTemplate/findSpecList.do?id="+id);
 	}
+
+	//查询模板数组
+	this.findTypeTemplateList = function () {
+		return $http.get("../typeTemplate/findTypeTemplateList.do")
+	}
 });

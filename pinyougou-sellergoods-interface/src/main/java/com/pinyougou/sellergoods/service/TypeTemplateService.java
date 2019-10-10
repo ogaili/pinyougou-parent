@@ -62,4 +62,7 @@ public interface TypeTemplateService {
 
 
 	public List<Map> findSpecList(Long id);
+
+	//查询模板数组
+    List<TbTypeTemplate> findTypeTemplateList();
 }

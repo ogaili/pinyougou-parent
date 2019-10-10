@@ -88,5 +88,14 @@ app.controller('sellerController' ,function($scope,$controller   ,sellerService)
 			}
 		)
 	}
+
+	/*<input ng-model="searchEntity.status" type="radio" value="" />全部
+		<input ng-model="searchEntity.status" type="radio" value="0" />待审核
+		<input ng-model="searchEntity.status" type="radio" value="1" />已审核
+		<input ng-model="searchEntity.status" type="radio" value="2" />审核未通过
+		<input ng-model="searchEntity.status" type="radio" value="3" />关闭
+		<button  ng-click="reloadList()"  class="btn btn-default" >查询</button>*/
+
+	$scope.sellerStatusList = ['待审核','已审核','审核未通过','关闭'];
     
 });	

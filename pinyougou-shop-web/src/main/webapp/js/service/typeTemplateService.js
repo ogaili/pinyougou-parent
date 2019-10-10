@@ -33,4 +33,5 @@ app.service('typeTemplateService',function($http){
 	this.findSpecList = function (id) {
 		return $http.post("../typeTemplate/findSpecList.do?id="+id);
 	}
+
 });

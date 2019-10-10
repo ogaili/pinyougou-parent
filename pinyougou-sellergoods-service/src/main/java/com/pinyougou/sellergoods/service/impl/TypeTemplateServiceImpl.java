@@ -128,4 +128,9 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 		return list;
 	}
 
+	@Override
+	public List<TbTypeTemplate> findTypeTemplateList() {
+		return typeTemplateMapper.selectByExample(null);
+	}
+
 }

@@ -17,12 +17,13 @@
 	<script src="../plugins/angularjs/angular.min.js"></script>
 	<script src="../js/base/base.js"></script>
 	<script src="../js/service/itemCatService.js"></script>
+	<script src="../js/service/typeTemplateService.js"></script>
 	<script src="../js/controller/baseController.js"></script>
 	<script src="../js/controller/itemCatController.js"></script>
     
 </head>
 
-<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="itemCatController" ng-init="findByParentId(0)" >
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="itemCatController" ng-init="findByParentId(0);findTypeTemplateList()" >
   <!-- .box-body -->
                 
                     <div class="box-header with-border">
@@ -68,7 +69,7 @@
 			                              </th> 
 										  <th class="sorting_asc">分类ID</th>
 									      <th class="sorting">分类名称</th>									   
-									      <th class="sorting">类型模板ID</th>
+									      <th class="sorting">类型模板</th>
 					                      <th class="text-center">操作</th>
 			                          </tr>
 			                      </thead>
@@ -78,7 +79,7 @@
 				                          <td>{{entity.id}}</td>
 									      <td>{{entity.name}}</td>
 									      <td>
-											  {{entity.typeId}}
+											  {{typeTemplateArray[entity.typeId]}}
 									      </td>									      
 		                                  <td class="text-center">
 											  <span ng-if="grade!=3">
@@ -125,7 +126,7 @@
 		      	<tr>
 		      		<td>类型模板</td>
 		      		<td>
-		      			<input  ng-model="entity.typeId"  placeholder="商品类型模板" class="form-control" type="text"/>
+		      			<select  ng-model="entity.typeId" ng-options="pojo.id as pojo.name for pojo in typeTemplateList"  placeholder="商品类型模板" class="form-control" type="text"/>
 		      		</td>		      		      		
 		      	</tr>		      	
 			 </table>				
