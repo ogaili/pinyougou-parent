@@ -43,7 +43,9 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             Map brandAndSpec = getBrandAndSpec((String) searchMap.get("category"));
             resultMap.putAll(brandAndSpec);
         }else {
-            resultMap.putAll(getBrandAndSpec(list.get(0)));
+            if (list.size()>0) {
+                resultMap.putAll(getBrandAndSpec(list.get(0)));
+            }
         }
 
         return resultMap;
@@ -61,6 +63,27 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 
         Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));
         query.addCriteria(criteria);
+
+        //添加分类字段过滤
+        if (!"".equals(searchMap.get("category"))) {
+            Criteria FieldCriteria = new Criteria("item_category").is(searchMap.get("category"));
+            query.addFilterQuery(new SimpleFilterQuery().addCriteria(FieldCriteria));
+        }
+
+        //添加商品字段过滤
+        if (!"".equals(searchMap.get("brand"))) {
+            Criteria FieldCriteria = new Criteria("item_brand").is(searchMap.get("brand"));
+            query.addFilterQuery(new SimpleFilterQuery().addCriteria(FieldCriteria));
+        }
+
+        //添加规格字段过滤
+        if (searchMap.get("spec")!=null) {
+            Map<String,String> specs = (Map<String, String>) searchMap.get("spec");
+            for (String key : specs.keySet()) {
+                Criteria FieldCriteria = new Criteria("item_spec_"+key).is(specs.get(key));
+                query.addFilterQuery(new SimpleFilterQuery().addCriteria(FieldCriteria));
+            }
+        }
 
         HighlightPage<TbItem> page = solrTemplate.queryForHighlightPage(query, TbItem.class);
 
