@@ -18,6 +18,7 @@ import com.pinyougou.pojo.TbTypeTemplateExample;
 import com.pinyougou.pojo.TbTypeTemplateExample.Criteria;
 
 import entity.PageResult;
+import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * 服务实现层
@@ -31,6 +32,8 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 	private TbTypeTemplateMapper typeTemplateMapper;
 	@Autowired
 	private TbSpecificationOptionMapper specificationOptionMapper;
+	@Autowired
+	private RedisTemplate redisTemplate;
 	
 	/**
 	 * 查询全部
@@ -111,7 +114,10 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 	
 		}
 		
-		Page<TbTypeTemplate> page= (Page<TbTypeTemplate>)typeTemplateMapper.selectByExample(example);		
+		Page<TbTypeTemplate> page= (Page<TbTypeTemplate>)typeTemplateMapper.selectByExample(example);
+
+		saveToRedis();
+
 		return new PageResult(page.getTotal(), page.getResult());
 	}
 
@@ -131,6 +137,17 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 	@Override
 	public List<TbTypeTemplate> findTypeTemplateList() {
 		return typeTemplateMapper.selectByExample(null);
+	}
+
+	private void saveToRedis(){
+
+		List<TbTypeTemplate> templates = findAll();
+		for (TbTypeTemplate template : templates) {
+			List<Map> brands = JSON.parseArray(template.getBrandIds(), Map.class);
+			redisTemplate.boundHashOps("brandList").put(template.getId(),brands);
+			List<Map> specList = findSpecList(template.getId());
+			redisTemplate.boundHashOps("specList").put(template.getId(),specList);
+		}
 	}
 
 }

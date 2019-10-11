@@ -366,9 +366,8 @@
 											<i>{{pojo.price}}</i>
 										</strong>
 								</div>
-								<div class="attr">
-									<em>{{pojo.title}}</em>
-								</div>
+<!--								angularJs 信任 html写法 base.js中定义 filter过滤器-->
+								<div class="attr" ng-bind-html="pojo.title | trustHtml"></div>
 								<div class="cu">
 									<em></em>
 								</div>
