@@ -31,9 +31,9 @@ public class ItemSearchServiceImpl implements ItemSearchService {
     @Override
     public Map search(Map searchMap) {
         //关键字去空格 因为有个空格会影响分词和搜索结果 比如  三星 手机 分词后就是 三星 手机 搜索出来的结果就会很少
-        if (searchMap.get("keywords")!="" &&searchMap.get("keywords")!=null) {
+        if (searchMap.get("keywords") != "" && searchMap.get("keywords") != null) {
             String keywords = (String) searchMap.get("keywords");
-            searchMap.put("keywords",keywords.replace(" ",""));
+            searchMap.put("keywords", keywords.replace(" ", ""));
         }
 
         //高亮查询
@@ -81,7 +81,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 
         //添加规格字段过滤
         Map<String, String> specs = (Map<String, String>) searchMap.get("spec");
-        if (specs != null && specs.size()>0) {
+        if (specs != null && specs.size() > 0) {
             for (String key : specs.keySet()) {
                 Criteria FieldCriteria = new Criteria("item_spec_" + key).is(specs.get(key));
                 query.addFilterQuery(new SimpleFilterQuery().addCriteria(FieldCriteria));
@@ -89,31 +89,44 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
 
         //添加价格字段过滤
-        if (!"".equals(searchMap.get("price"))){
+        if (!"".equals(searchMap.get("price"))) {
             String price = (String) searchMap.get("price");
             String[] priceList = price.split("-");
             if (!priceList[0].equals("0")) {
                 Criteria FieldCriteria = new Criteria("item_price").greaterThanEqual(priceList[0]);
                 query.addFilterQuery(new SimpleFilterQuery().addCriteria(FieldCriteria));
             }
-            if (!priceList[1].equals("*")){
+            if (!priceList[1].equals("*")) {
                 Criteria FieldCriteria = new Criteria("item_price").lessThanEqual(priceList[1]);
                 query.addFilterQuery(new SimpleFilterQuery().addCriteria(FieldCriteria));
             }
         }
 
         //添加排序
-        if (!"".equals(searchMap.get("sort"))&& !"".equals(searchMap.get("field")) ){
+        if (!"".equals(searchMap.get("sort")) && !"".equals(searchMap.get("field"))) {
 
             if ("ASC".equals(searchMap.get("sort"))) {
-                query.addSort(new Sort(Sort.Direction.ASC , "item_"+searchMap.get("field")));
+                query.addSort(new Sort(Sort.Direction.ASC, "item_" + searchMap.get("field")));
             }
             if ("DESC".equals(searchMap.get("sort"))) {
-                query.addSort(new Sort(Sort.Direction.DESC , "item_"+searchMap.get("field")));
+                query.addSort(new Sort(Sort.Direction.DESC, "item_" + searchMap.get("field")));
             }
 
         }
 
+        //添加分页
+        Integer pageNo = (Integer) searchMap.get("pageNo");
+        Integer pageSize = (Integer) searchMap.get("pageSize");
+        if (pageNo == null) {
+            pageNo = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 40;
+        }
+        //设置起始索引
+        query.setOffset((pageNo-1) * pageSize);
+        //设置每页最大条数
+        query.setRows(pageSize);
 
 
 
@@ -138,7 +151,10 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         HashMap<String, Object> map = new HashMap<>();
 
         map.put("rows", page.getContent());
-
+        //设置总页数
+        map.put("totalPages",page.getTotalPages());
+        //设置总条数
+        map.put("total",page.getTotalElements());
         return map;
     }
 
@@ -177,6 +193,25 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         List specList = (List) redisTemplate.boundHashOps("specList").get(templateId);
         map.put("specList", specList);
         return map;
+    }
+
+    //保存更新的sku列表
+    @Override
+    public void importList(List<TbItem> skuList) {
+        System.out.println("更新了");
+        solrTemplate.saveBeans(skuList);
+        solrTemplate.commit();
+    }
+
+    //根据goodsId删除索引库
+    @Override
+    public void deleteByGoodsIds(Long[] ids) {
+        System.out.println("删除了");
+        SimpleQuery query = new SimpleQuery("*:*");
+        Criteria criteria = new Criteria("item_goodsid").in(ids);
+        query.addCriteria(criteria);
+        solrTemplate.delete(query);
+        solrTemplate.commit();
     }
 
 }

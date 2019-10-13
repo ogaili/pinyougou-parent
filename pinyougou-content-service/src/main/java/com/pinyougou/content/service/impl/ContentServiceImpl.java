@@ -134,7 +134,7 @@ public class ContentServiceImpl implements ContentService {
 		//从redis查询
 		List<TbContent> list = (List<TbContent>) redisTemplate.boundHashOps("contentList").get(categoryId);
 
-		if (list == null) {
+		if (list == null || list.size()==0) {
 			System.out.println("从数据库查询");
 			//如果为空 就从数据库查询
 			TbContentExample example = new TbContentExample();

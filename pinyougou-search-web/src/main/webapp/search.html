@@ -18,7 +18,7 @@
 		<script src="/js/controller/searchController.js"></script>
 	</head>
 
-	<body ng-app="pinyougou" ng-controller="searchController" ng-init="loadKeywords()">
+	<body ng-app="pinyougou" ng-controller="searchController" ng-init="loadKeywords();">
 		<!-- 头部栏位 -->
 		<!--页面顶部-->
 		<div id="nav-bottom">
@@ -317,33 +317,21 @@
 				<div class="fr page">
 					<div class="sui-pagination pagination-large">
 						<ul>
-							<li class="prev disabled">
-								<a href="#">«上一页</a>
+							<li class="prev {{searchMap.pageNo <= 1?'disabled':''}}">
+								<a  ng-click="pageSearch(searchMap.pageNo-1)" href="#">«</a>
 							</li>
-							<li class="active">
-								<a href="#">1</a>
+							<li ng-if="firstDot" class="dotted"><span>...</span></li>
+							<li class="active" ng-repeat="page in pageLabel">
+								<a  ng-click="pageSearch(page)" href="#">{{page}}</a>
 							</li>
-							<li>
-								<a href="#">2</a>
-							</li>
-							<li>
-								<a href="#">3</a>
-							</li>
-							<li>
-								<a href="#">4</a>
-							</li>
-							<li>
-								<a href="#">5</a>
-							</li>
-							<li class="dotted"><span>...</span></li>
-							<li class="next">
-								<a href="#">下一页»</a>
+							<li ng-if="lastDot" class="dotted"><span>...</span></li>
+							<li class="next {{searchMap.pageNo >= resultMap.totalPages?'disabled':''}}">
+								<a ng-click="pageSearch(searchMap.pageNo+1)" href="#">»</a>
 							</li>
 						</ul>
-						<div><span>共10页&nbsp;</span><span>
-      到第
-      <input type="text" class="page-num">
-      页 <button class="page-confirm" onclick="alert(1)">确定</button></span></div>
+						<div><span>共{{resultMap.totalPages}}页&nbsp;</span><span>第
+      <input type="text" class="page-num" ng-model="searchMap.pageNo">
+      页 <button class="page-confirm" ng-click="pageSearch(searchMap.pageNo)">确定</button></span></div>
 					</div>
 				</div>
 			</div>

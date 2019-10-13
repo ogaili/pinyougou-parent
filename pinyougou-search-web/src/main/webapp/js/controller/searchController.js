@@ -1,15 +1,14 @@
 app.controller('searchController',function ($scope,$location, searchService) {
 
-
+    $scope.resultMap = {'brandList':[]};
     //定义查询对象结构
-    $scope.searchMap = {'keywords':'','category':'','brand':'' ,'price':'' ,'spec':{} , 'sort':'' , 'field':''};
-
-    $scope.resultMap = {'brandList':[]}
+    $scope.searchMap = {'keywords':'','category':'','brand':'' ,'price':'' ,'spec':{} , 'sort':'' , 'field':'' ,'pageNo':1 ,'pageSize':40};
 
     $scope.search =function (searchMap) {
         searchService.search(searchMap).success(
             function (response) {
                 $scope.resultMap = response;
+                $scope.buildPage()
             }
         )
     };
@@ -59,11 +58,61 @@ app.controller('searchController',function ($scope,$location, searchService) {
       return false;
     };
 
+    //构建分页栏
+    $scope.buildPage = function(){
+        var pageNo =  $scope.searchMap.pageNo; //当前页
+        var totalPages =  $scope.resultMap.totalPages; //总页数
+        var page;
+        $scope.pageLabel=[]; //分页栏
+        $scope.firstDot=true;//前面有点
+        $scope.lastDot=true;//后边有点
+
+
+        if (totalPages <= 5){
+            for (var i = 1;i<=totalPages;i++){
+                $scope.pageLabel.push(i)
+            }
+            return;
+        }
+
+        //如果当前页小于等于3 显示 5个页码
+        if (pageNo <= 3){
+            page  = 1;
+            $scope.firstDot=false;
+        }else  if (pageNo >= totalPages-2){
+            //如果当前页 >= 总页数-2 页码等于总页数-4
+            page = totalPages -4;
+            $scope.lastDot=false;
+        }else {
+            // 其他情况
+            page = pageNo -2
+        }
+
+        for (var i = page ; i<=page+4;i++){
+            $scope.pageLabel.push(i)
+        }
+    };
+
+    //分页查询
+    $scope.pageSearch = function(page){
+
+        if (page <= 1 ){
+            page = 1;
+        }
+        if (page >= $scope.resultMap.totalPages) {
+            page = $scope.resultMap.totalPages
+        }
+        $scope.searchMap.pageNo = parseInt(page)
+        $scope.search($scope.searchMap);
+    }
+
+
+
     //主页跳转
     $scope.loadKeywords = function(){
         $scope.searchMap.keywords =  $location.search()['keywords'];
         $scope.search($scope.searchMap)
-    }
+    };
 
     //点击增加查询条件 商品分类，删除其他条件
     $scope.initSearchMap=function () {
@@ -79,6 +128,7 @@ app.controller('searchController',function ($scope,$location, searchService) {
 
         $scope.searchMap.field = '';
 
+        $scope.searchMap.pageNo = 1;
     };
 
 });
