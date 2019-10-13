@@ -12,4 +12,9 @@ app.controller('contentController' ,function($scope,contentService){
         )
     }
 
+    //点击搜索跳转search.html页面
+    $scope.search = function () {
+        location.href = 'http://localhost:9104/search.html#?keywords='+$scope.keywords
+    }
+
 });

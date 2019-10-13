@@ -5,6 +5,7 @@ import com.pinyougou.pojo.TbBrand;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.search.service.ItemSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.*;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service(timeout = 5000)
+@Service(timeout = 10000)
 public class ItemSearchServiceImpl implements ItemSearchService {
 
     @Autowired
@@ -23,27 +24,30 @@ public class ItemSearchServiceImpl implements ItemSearchService {
     @Autowired
     private RedisTemplate redisTemplate;
 
-
     /**
-     *
      * @param searchMap 查询条件
      * @return 返回查询结果
      */
     @Override
     public Map search(Map searchMap) {
+        //关键字去空格 因为有个空格会影响分词和搜索结果 比如  三星 手机 分词后就是 三星 手机 搜索出来的结果就会很少
+        if (searchMap.get("keywords")!="" &&searchMap.get("keywords")!=null) {
+            String keywords = (String) searchMap.get("keywords");
+            searchMap.put("keywords",keywords.replace(" ",""));
+        }
 
         //高亮查询
         Map resultMap = searchHighlight(searchMap);
 
         //商品分类查询
         List<String> list = searchCategoryList(searchMap);
-        resultMap.put("categoryList",list);
+        resultMap.put("categoryList", list);
 
-        if (!"".equals(searchMap.get("category"))){
+        if (!"".equals(searchMap.get("category"))) {
             Map brandAndSpec = getBrandAndSpec((String) searchMap.get("category"));
             resultMap.putAll(brandAndSpec);
-        }else {
-            if (list.size()>0) {
+        } else {
+            if (list.size() > 0) {
                 resultMap.putAll(getBrandAndSpec(list.get(0)));
             }
         }
@@ -51,11 +55,10 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         return resultMap;
     }
 
-
-    private Map searchHighlight(Map searchMap){
+    private Map searchHighlight(Map searchMap) {
 
         HighlightQuery query = new SimpleHighlightQuery();
-        HighlightOptions highlightOptions =new HighlightOptions();
+        HighlightOptions highlightOptions = new HighlightOptions();
         highlightOptions.addField("item_title");
         highlightOptions.setSimplePrefix("<em style='color:red'>");//前缀
         highlightOptions.setSimplePostfix("</em>");//后缀
@@ -77,13 +80,42 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
 
         //添加规格字段过滤
-        if (searchMap.get("spec")!=null) {
-            Map<String,String> specs = (Map<String, String>) searchMap.get("spec");
+        Map<String, String> specs = (Map<String, String>) searchMap.get("spec");
+        if (specs != null && specs.size()>0) {
             for (String key : specs.keySet()) {
-                Criteria FieldCriteria = new Criteria("item_spec_"+key).is(specs.get(key));
+                Criteria FieldCriteria = new Criteria("item_spec_" + key).is(specs.get(key));
                 query.addFilterQuery(new SimpleFilterQuery().addCriteria(FieldCriteria));
             }
         }
+
+        //添加价格字段过滤
+        if (!"".equals(searchMap.get("price"))){
+            String price = (String) searchMap.get("price");
+            String[] priceList = price.split("-");
+            if (!priceList[0].equals("0")) {
+                Criteria FieldCriteria = new Criteria("item_price").greaterThanEqual(priceList[0]);
+                query.addFilterQuery(new SimpleFilterQuery().addCriteria(FieldCriteria));
+            }
+            if (!priceList[1].equals("*")){
+                Criteria FieldCriteria = new Criteria("item_price").lessThanEqual(priceList[1]);
+                query.addFilterQuery(new SimpleFilterQuery().addCriteria(FieldCriteria));
+            }
+        }
+
+        //添加排序
+        if (!"".equals(searchMap.get("sort"))&& !"".equals(searchMap.get("field")) ){
+
+            if ("ASC".equals(searchMap.get("sort"))) {
+                query.addSort(new Sort(Sort.Direction.ASC , "item_"+searchMap.get("field")));
+            }
+            if ("DESC".equals(searchMap.get("sort"))) {
+                query.addSort(new Sort(Sort.Direction.DESC , "item_"+searchMap.get("field")));
+            }
+
+        }
+
+
+
 
         HighlightPage<TbItem> page = solrTemplate.queryForHighlightPage(query, TbItem.class);
 
@@ -91,7 +123,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         for (HighlightEntry<TbItem> entry : highlighted) {
             TbItem tbItem = entry.getEntity();
 
-            if (entry.getHighlights().size()>0 && entry.getHighlights().get(0).getSnipplets().size()>0) {
+            if (entry.getHighlights().size() > 0 && entry.getHighlights().get(0).getSnipplets().size() > 0) {
                 tbItem.setTitle(entry.getHighlights().get(0).getSnipplets().get(0));
             }
 
@@ -105,12 +137,12 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         // entry.getHighlights().get(0).getSnipplets().get(0)具体的字段  "<em style='color:red'>华为</em> G620 精致黑 联通4G手机"
         HashMap<String, Object> map = new HashMap<>();
 
-        map.put("rows",page.getContent());
+        map.put("rows", page.getContent());
 
         return map;
     }
 
-    private List<String> searchCategoryList(Map searchMap){
+    private List<String> searchCategoryList(Map searchMap) {
 
         Query query = new SimpleQuery();
         Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));
@@ -134,16 +166,16 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         return list;
     }
 
-    private Map getBrandAndSpec(String categoryName){
+    private Map getBrandAndSpec(String categoryName) {
 
         HashMap<String, Object> map = new HashMap<>();
         Long templateId = (Long) redisTemplate.boundHashOps("itemCatList").get(categoryName);
         //获取brandList信息
         List<TbBrand> brandList = (List) redisTemplate.boundHashOps("brandList").get(templateId);
-        map.put("brandList",brandList);
+        map.put("brandList", brandList);
         //获取specList信息
         List specList = (List) redisTemplate.boundHashOps("specList").get(templateId);
-        map.put("specList",specList);
+        map.put("specList", specList);
         return map;
     }
 
