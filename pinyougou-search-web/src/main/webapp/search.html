@@ -18,7 +18,7 @@
 		<script src="/js/controller/searchController.js"></script>
 	</head>
 
-	<body ng-app="pinyougou" ng-controller="searchController" ng-init="loadKeywords();">
+	<body ng-app="pinyougou" ng-controller="searchController" ng-init="loadKeywords()">
 		<!-- 头部栏位 -->
 		<!--页面顶部-->
 		<div id="nav-bottom">
@@ -287,7 +287,7 @@
 						<li class="yui3-u-1-5" ng-repeat="pojo in resultMap.rows">
 							<div class="list-wrap">
 								<div class="p-img">
-									<a href="item.html" target="_blank"><img src="{{pojo.image}}" /></a>
+									<a href="http://localhost:9105/{{pojo.goodsId}}.html" target="_blank"><img src="{{pojo.image}}" /></a>
 								</div>
 								<div class="price">
 									<strong>

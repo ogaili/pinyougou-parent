@@ -1,6 +1,7 @@
 package com.pinyougou.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.pinyougou.page.service.ItemPageService;
 import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.pojogroup.Goods;
@@ -127,6 +128,8 @@ public class GoodsController {
 
     @Reference
     private ItemSearchService itemSearchService;
+    @Reference
+    private ItemPageService itemPageService;
 
     /**
      * 提交审核 改变审核状态
@@ -136,8 +139,13 @@ public class GoodsController {
     @RequestMapping("/updateAuditStatus")
     public Result updateAuditStatus(Long[] ids, String status) {
 
-        //判断是审核通过才更新索引库
+        //判断是审核通过才更新索引库 &更新静态页面
         if ("2".equals(status)) {
+
+            for (Long id : ids) {
+                itemPageService.genItemHtml(id);
+            }
+
             //更新前先查询sku
             List<TbItem> skuList = goodsService.findItemListByGoodsIdAndStatus(ids, status);
             //将sku更新到索引库

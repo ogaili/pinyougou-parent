@@ -1,6 +1,6 @@
 app.controller('searchController',function ($scope,$location, searchService) {
 
-    $scope.resultMap = {'brandList':[]};
+    $scope.resultMap = {};
     //定义查询对象结构
     $scope.searchMap = {'keywords':'','category':'','brand':'' ,'price':'' ,'spec':{} , 'sort':'' , 'field':'' ,'pageNo':1 ,'pageSize':40};
 
@@ -12,6 +12,7 @@ app.controller('searchController',function ($scope,$location, searchService) {
             }
         )
     };
+
 
     $scope.firstSearch = function(){
         $scope.initSearchMap();
@@ -48,8 +49,12 @@ app.controller('searchController',function ($scope,$location, searchService) {
         $scope.search($scope.searchMap)
     };
 
+
+
+
     //隐藏品牌列表
     $scope.keywordsIsBrand = function(){
+        // alert(JSON.stringify($scope.resultMap.brandList))
       for (var i = 0;i<$scope.resultMap.brandList.length;i++){
           if ($scope.searchMap.keywords.indexOf($scope.resultMap.brandList[i].text) >= 0) {
               return true;
@@ -72,6 +77,8 @@ app.controller('searchController',function ($scope,$location, searchService) {
             for (var i = 1;i<=totalPages;i++){
                 $scope.pageLabel.push(i)
             }
+            $scope.firstDot=false;//前面有点
+            $scope.lastDot=false;//后边有点
             return;
         }
 
