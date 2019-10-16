@@ -1,5 +1,5 @@
 //商品详细页（控制层）
-app.controller('itemController',function($scope){
+app.controller('itemController',function($scope,$location){
 	//数量操作
 	$scope.addNum=function(x){
 		$scope.num=$scope.num+x;
@@ -29,9 +29,20 @@ app.controller('itemController',function($scope){
 	
 	//选择sku方法
 	$scope.loadSku = function(){
-		//默认读取第一个
+		//点击页面根据穿的的skuId选择
+		$scope.skuId =  $location.search()['skuId'];
+
+		//遍历页面的spec列表 对比传递过来的skuId
+		for(var i = 0;i<skuList.length;i++){
+			if (skuList[i].id == $scope.skuId) {
+				$scope.sku = skuList[i]
+				$scope.specificationItems= JSON.parse(JSON.stringify($scope.sku.spec))
+			}
+		}
+
+		/*//默认读取第一个
 		$scope.sku = skuList[0];
-		$scope.specificationItems= JSON.parse(JSON.stringify($scope.sku.spec))
+		$scope.specificationItems= JSON.parse(JSON.stringify($scope.sku.spec))*/
 	}
 	
 	equalsObject = function(map1,map2){
@@ -66,6 +77,7 @@ app.controller('itemController',function($scope){
 	$scope.addToCart=function(){
 		alert('skuid:'+$scope.sku.id);				
 	}
-	
+
+
 	
 });

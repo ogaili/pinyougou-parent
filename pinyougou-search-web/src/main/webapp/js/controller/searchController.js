@@ -138,4 +138,10 @@ app.controller('searchController',function ($scope,$location, searchService) {
         $scope.searchMap.pageNo = 1;
     };
 
+
+
+    //测试方法
+    $scope.sendSkuId  =function (goodsId,skuId) {
+        window.open('http://localhost:9105/'+goodsId+'.html#?skuId='+skuId);
+    }
 });

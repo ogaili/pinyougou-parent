@@ -13,11 +13,7 @@
     <artifactId>pinyougou-manager-web</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>com.itheima</groupId>
-            <artifactId>pinyougou-page-interface</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+
         <dependency>
             <groupId>com.itheima</groupId>
             <artifactId>pinyougou-sellergoods-interface</artifactId>
@@ -34,11 +30,7 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.itheima</groupId>
-            <artifactId>pinyougou-search-interface</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+
 
 
         <dependency>
@@ -64,6 +56,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.13.4</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

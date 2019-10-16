@@ -1,6 +1,5 @@
 package com.pinyougou.page.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.mapper.TbGoodsDescMapper;
 import com.pinyougou.mapper.TbGoodsMapper;
 import com.pinyougou.mapper.TbItemCatMapper;
@@ -11,14 +10,14 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import java.io.FileWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 
-@Service(timeout = 5000)
+@Service
 public class ItemPageServiceImpl implements ItemPageService {
 
     @Autowired
@@ -60,13 +59,23 @@ public class ItemPageServiceImpl implements ItemPageService {
             example.createCriteria().andGoodsIdEqualTo(goodsId).andStatusEqualTo("1");
             example.setOrderByClause("is_default desc");
             List<TbItem> items = itemMapper.selectByExample(example);
-            dataModel.put("itemList",items);
+            dataModel.put("itemList",items); //
 
-            Writer out = new FileWriter(pageDir+goodsId+".html");
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(pageDir + goodsId + ".html")), "utf-8"));
             template.process(dataModel,out);
             out.close();
 
             return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteHtml(Long goodsId) {
+        try {
+           return new File(pageDir + goodsId + ".html").delete();
         } catch (Exception e) {
             e.printStackTrace();
             return false;
