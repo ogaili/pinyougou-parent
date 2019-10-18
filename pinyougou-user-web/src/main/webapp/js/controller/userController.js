@@ -44,7 +44,7 @@ app.controller('userController' ,function($scope,$controller   ,userService){
 				if(response.success){
 					alert(response.message)
 		        	// 跳转到首页
-					location.href = 'http://www.baidu.com'
+					location.href = 'http://localhost:9103'
 				}else{
 					alert(response.message);
 				}

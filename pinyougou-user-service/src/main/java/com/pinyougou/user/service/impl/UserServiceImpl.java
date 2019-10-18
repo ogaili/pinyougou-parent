@@ -3,12 +3,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.pinyougou.mapper.TbUserMapper;
 import com.pinyougou.user.service.UserService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.pojo.TbUser;
@@ -67,6 +69,8 @@ public class UserServiceImpl implements UserService {
 
 		String code = (long)(Math.random() * 1000000) + "";
 		redisTemplate.boundHashOps("smsCode").put(phone,code);
+//		差一个超时时间设置
+//		redisTemplate.expire(phone,60*5, TimeUnit.SECONDS);
 		System.out.println(code);
 
 		Map<String, String> map = new HashMap<>();
@@ -99,6 +103,7 @@ public class UserServiceImpl implements UserService {
 			return false;
 		}
 		if (sysCode.equals(smsCode)){
+			user.setPassword(DigestUtils.md5Hex(user.getPassword()));
 			user.setCreated(new Date());
 			user.setUpdated(new Date());
 
