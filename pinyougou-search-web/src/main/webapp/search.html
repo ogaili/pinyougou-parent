@@ -103,7 +103,7 @@
 								<div class="fr shopcar">
 									<div class="show-shopcar" id="shopcar">
 										<span class="car"></span>
-										<a class="sui-btn btn-default btn-xlarge" href="cart.html" target="_blank">
+										<a class="sui-btn btn-default btn-xlarge" href="http://localhost:9107" target="_blank">
 											<span>我的购物车</span>
 											<i class="shopnum">0</i>
 										</a>
@@ -287,7 +287,7 @@
 						<li class="yui3-u-1-5" ng-repeat="pojo in resultMap.rows">
 							<div class="list-wrap">
 								<div class="p-img">
-									<a href="javascript:void(0)" ng-click="sendSkuId(pojo.goodsId,pojo.id)" target="_blank"><img src="{{pojo.image}}" /></a>
+									<a  ng-click="sendSkuId(pojo.goodsId,pojo.id)" ><img src="{{pojo.image}}" /></a>
 								</div>
 								<div class="price">
 									<strong>

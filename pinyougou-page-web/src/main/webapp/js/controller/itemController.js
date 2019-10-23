@@ -1,5 +1,5 @@
 //商品详细页（控制层）
-app.controller('itemController',function($scope,$location){
+app.controller('itemController',function($scope,$location,itemService){
 	//数量操作
 	$scope.addNum=function(x){
 		$scope.num=$scope.num+x;
@@ -74,8 +74,17 @@ app.controller('itemController',function($scope,$location){
 	}
 	
 		//添加商品到购物车
-	$scope.addToCart=function(){
-		alert('skuid:'+$scope.sku.id);				
+	$scope.addToCart=function(num){
+		itemService.addToCart($scope.sku.id,num).success(
+			function (response) {
+				if (response.success){
+					alert(response.message)
+					window.open('http://localhost:9107');
+				}else {
+					alert(response.message)
+				}
+			}
+		)
 	}
 
 

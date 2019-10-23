@@ -28,6 +28,13 @@
         <module>pinyougou-user-interface</module>
         <module>pinyougou-user-service</module>
         <module>pinyougou-user-web</module>
+        <module>pinyougou-cart-intertface</module>
+        <module>pinyougou-cart-service</module>
+        <module>pinyougou-cart-web</module>
+        <module>pinyougou-order-interface</module>
+        <module>pinyougou-order-service</module>
+        <module>pinyougou-pay-Interface</module>
+        <module>pinyougou-pay-service</module>
     </modules>
     <packaging>pom</packaging>
 
