@@ -71,7 +71,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<Cart> merge(List<Cart> cartList_redis, List<Cart> cartList_cookie) {
+    public List<Cart> merge(List<Cart>cartList_cookie , List<Cart> cartList_redis) {
         if (cartList_redis!=null && cartList_redis.size()>0) {
             for (Cart redis : cartList_redis) {
                 for (TbOrderItem orderItem : redis.getOrderItemList()) {

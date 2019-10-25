@@ -66,19 +66,25 @@ public class CartController {
             System.out.println("从cookie查询");
             return cartList_cookie;
         }else {
-            //否则取出redis的值
+            //进入这里表示用户已经登陆
+            //从redis取出数据
             List<Cart> cartList_redis = (List<Cart>) redisTemplate.boundHashOps("cartList").get(getUserName());
-            if (cartList_redis!=null&&cartList_redis.size()>0){
-                //进入表示redis中有东西 ，那么需要合并cookie
-                System.out.println("从redis查询并合并");
-                cartList_cookie = cartService.merge(cartList_cookie,cartList_redis);
+            //判断如果cookie不为空则进入下面逻辑执行合并操作
+            if (cartList_cookie!=null&&cartList_cookie.size()>0){
+                //进入表示cookie中有东西 ，那么需要合并cookie
+                System.out.println("合并");
+                cartList_redis = cartService.merge(cartList_cookie,cartList_redis);
                 //清除cookie中的数据
                 CookieUtil.deleteCookie(request, response, "cartList");
                 //将数据redis存入
                 redisTemplate.boundHashOps("cartList").put(getUserName(),cartList_redis);
             }
-            //没有则直接返回
-            return cartList_cookie;
+
+            if (cartList_redis == null || cartList_redis.size()==0){
+                return cartList_cookie;
+            }
+
+            return cartList_redis;
         }
 
     }
